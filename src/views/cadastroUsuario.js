@@ -1,6 +1,12 @@
 import React from 'react';
 import Card from '../components/card'
 import FormGroup from '../components/form-group'
+import { useNavigate } from 'react-router-dom'
+
+const withNavigate = Component => props => {
+    const navigate = useNavigate();
+    return <Component {...props} navigate={navigate} />;
+  };
 
 class CadastroUsuario extends React.Component {
 
@@ -16,6 +22,12 @@ class CadastroUsuario extends React.Component {
         console.log('Email', this.state.email)
         console.log('Senha', this.state.senha)
         console.log('senhaRepeticao', this.state.senhaRepeticao)
+    }
+
+    voltar = () => {
+        const navigate = this.props.navigate;
+
+        navigate(-1);
     }
 
     render() {
@@ -43,7 +55,7 @@ class CadastroUsuario extends React.Component {
                                         value={this.state.senhaRepeticao} onChange={e => this.setState({ senhaRepeticao: e.target.value })} />
                                 </FormGroup>
                                 <button onClick={this.cadastrar} type="button" className="btn btn-success">Salvar</button>
-                                <button onClick={this.cadastrar} type="button" className="btn btn-danger">Voltar</button>
+                                <button onClick={this.voltar} type="button" className="btn btn-danger">Voltar</button>
 
                             </fieldset>
                         </div>
@@ -57,4 +69,4 @@ class CadastroUsuario extends React.Component {
     }
 }
 
-export default CadastroUsuario
+export default withNavigate ( CadastroUsuario )

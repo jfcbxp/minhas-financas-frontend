@@ -1,7 +1,13 @@
 import React from 'react';
 import Card from '../components/card'
 import FormGroup from '../components/form-group'
+import { useNavigate } from 'react-router-dom'
 
+const withNavigate = Component => props => {
+    const navigate = useNavigate();
+    return <Component {...props} navigate={navigate} />;
+  };
+  
 class Login extends React.Component {
 
     state = {
@@ -12,6 +18,12 @@ class Login extends React.Component {
     entrar = () => {
         console.log('Email', this.state.email)
         console.log('Senha', this.state.senha)
+    }
+
+    prepareCadastrar = () => {
+        const navigate = this.props.navigate;
+
+        navigate('/cadastro-usuario');
     }
 
     render() {
@@ -33,7 +45,7 @@ class Login extends React.Component {
                                                     className="form-control" id="exampleInputPassword1" aria-describedby="emailHelp" placeholder="Digite a senha" />
                                             </FormGroup>
                                             <button onClick={this.entrar} type="button" className="btn btn-success">Entrar</button>
-                                            <button onClick={this.entrar} type="button" className="btn btn-danger">Cadastrar</button>
+                                            <button onClick={this.prepareCadastrar} type="button" className="btn btn-danger">Cadastrar</button>
 
                                         </fieldset>
                                     </div>
@@ -50,4 +62,4 @@ class Login extends React.Component {
     }
 }
 
-export default Login;
+export default withNavigate (Login );
