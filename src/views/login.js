@@ -13,24 +13,30 @@ class Login extends React.Component {
 
     state = {
         email: '',
-        senha: ''
+        senha: '',
+        mensagemErro: ''
     }
 
-    entrar = () => {
-        axios.post('http://localhost:8080/api/usuarios/autenticar', {
+    entrar = async () => {
+        await axios.post('http://localhost:8080/api/usuarios/autenticar', {
             email: this.state.email,
             senha: this.state.senha
         }).then(response => {
-            console.log(response)
+            localStorage.setItem('_usuario_logado', JSON.stringify(response.data) )
+            this.usuarioAutenticado()
         }).catch(erro => {
-            console.log(erro.response)
+            this.setState({mensagemErro: erro.response.status})
         })
 
     }
 
+    usuarioAutenticado = () => {
+        const navigate = this.props.navigate;
+        navigate('/');
+    }
+
     prepareCadastrar = () => {
         const navigate = this.props.navigate;
-
         navigate('/cadastro-usuario');
     }
 
@@ -40,6 +46,9 @@ class Login extends React.Component {
                 <div className="col-md-6" style={{ position: 'relative', left: '300px' }} >
                     <div className="bs-docs-section">
                         <Card title="Login">
+                            <div className="row" >
+                                <span>{this.state.mensagemErro}</span>
+                            </div>
                             <div className="row">
                                 <div className="col-lg-12">
                                     <div className="bs-component">

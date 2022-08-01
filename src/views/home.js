@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios'
 
 const withNavigate = Component => props => {
     const navigate = useNavigate();
@@ -9,7 +10,19 @@ const withNavigate = Component => props => {
 class Home extends React.Component {
 
     state = {
-        saldo: 0
+        saldo: 0,
+        mensagemErro: ''
+    }
+
+    componentDidMount(){
+        const usuarioLogado = JSON.parse(localStorage.getItem("_usuario_logado"))
+        console.log(usuarioLogado)
+        axios.get(`http://localhost:8080/api/usuarios/${usuarioLogado.id}`)
+        .then(response => {
+            this.setState({saldo: response.data})
+        }).catch(erro => {
+            this.setState({mensagemErro: erro.response.status})
+        })
     }
 
     render() {
