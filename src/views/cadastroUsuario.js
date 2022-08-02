@@ -1,7 +1,7 @@
 import React from 'react';
-import Card from '../components/card'
-import FormGroup from '../components/form-group'
 import { useNavigate } from 'react-router-dom'
+import Card from '../components/Card';
+import FormGroup from '../components/FormGroup';
 
 const withNavigate = Component => props => {
     const navigate = useNavigate();

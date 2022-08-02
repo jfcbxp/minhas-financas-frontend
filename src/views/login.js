@@ -1,8 +1,9 @@
 import React from 'react';
-import Card from '../components/card'
-import FormGroup from '../components/form-group'
+import Card from '../components/Card';
+import FormGroup from '../components/FormGroup';
 import { useNavigate } from 'react-router-dom'
-import UsuarioService from '../app/service/usuarioService';
+import UsuarioService from '../app/service/UsuarioService';
+import LocalStorageService from '../app/service/LocalStorageService';
 
 const withNavigate = Component => props => {
     const navigate = useNavigate();
@@ -28,7 +29,7 @@ class Login extends React.Component {
             email: this.state.email,
             senha: this.state.senha
         }).then(response => {
-            localStorage.setItem('_usuario_logado', JSON.stringify(response.data))
+            LocalStorageService.adicionarItem('_usuario_logado',response.data)
             this.usuarioAutenticado()
         }).catch(erro => {
             this.setState({ mensagemErro: erro.response.status })

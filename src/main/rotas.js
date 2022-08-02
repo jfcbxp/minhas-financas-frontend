@@ -1,8 +1,8 @@
 import React from 'react';
 import { Routes, Route, BrowserRouter, Link } from "react-router-dom";
-import Login from '../views/login';
-import CadastroUsuario from '../views/cadastroUsuario';
-import Home from '../views/home';
+import Login from '../views/Login';
+import CadastroUsuario from '../views/CadastroUsuario';
+import Home from '../views/Home';
 
 function Rotas() {
     return (

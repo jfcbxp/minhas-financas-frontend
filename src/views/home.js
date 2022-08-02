@@ -1,6 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'
-import UsuarioService from '../app/service/usuarioService';
+import UsuarioService from '../app/service/UsuarioService';
+import LocalStorageService from '../app/service/LocalStorageService';
 
 const withNavigate = Component => props => {
     const navigate = useNavigate();
@@ -20,7 +21,8 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
-        const usuarioLogado = JSON.parse(localStorage.getItem("_usuario_logado"))
+        const usuarioLogado = LocalStorageService.obterItem("_usuario_logado")
+        console.log(usuarioLogado)
         this.usuarioService.obterSaldoPorUsuario(usuarioLogado.id)
             .then(response => {
                 this.setState({ saldo: response.data })
