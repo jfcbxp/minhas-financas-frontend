@@ -2,7 +2,7 @@ import React from 'react';
 import Card from '../components/card'
 import FormGroup from '../components/form-group'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import UsuarioService from '../app/service/usuarioService';
 
 const withNavigate = Component => props => {
     const navigate = useNavigate();
@@ -17,15 +17,21 @@ class Login extends React.Component {
         mensagemErro: ''
     }
 
+    constructor() {
+        super();
+        this.usuarioService = new UsuarioService();
+
+    }
+
     entrar = async () => {
-        await axios.post('http://localhost:8080/api/usuarios/autenticar', {
+        this.usuarioService.autenticar({
             email: this.state.email,
             senha: this.state.senha
         }).then(response => {
-            localStorage.setItem('_usuario_logado', JSON.stringify(response.data) )
+            localStorage.setItem('_usuario_logado', JSON.stringify(response.data))
             this.usuarioAutenticado()
         }).catch(erro => {
-            this.setState({mensagemErro: erro.response.status})
+            this.setState({ mensagemErro: erro.response.status })
         })
 
     }

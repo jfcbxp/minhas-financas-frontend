@@ -6,24 +6,28 @@ const httpClient = axios.create({
 
 class ApiService {
 
-    constructor(apiurl){
+    constructor(apiurl) {
         this.apiurl = apiurl;
     }
 
-    post(url, objeto){
-        return httpClient.post(url,objeto);
+    post(url, objeto) {
+        const requestUrl = `${this.apiurl}${url}`
+        return httpClient.post(requestUrl, objeto);
     }
 
-    put(url, objeto){
-        return httpClient.put(url, objeto);
+    put(url, objeto) {
+        const requestUrl = `${this.apiurl}${url}`
+        return httpClient.put(requestUrl, objeto);
     }
 
-    delete(url){
-        return httpClient.delete(url);
+    delete(url) {
+        const requestUrl = `${this.apiurl}${url}`
+        return httpClient.delete(requestUrl);
     }
 
-    get(url){
-        return httpClient.delete(url);
+    get(url) {
+        const requestUrl = `${this.apiurl}${url}`
+        return httpClient.delete(requestUrl);
     }
 }
 

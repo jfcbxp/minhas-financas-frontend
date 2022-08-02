@@ -8,7 +8,7 @@ function Rotas() {
     return (
         <BrowserRouter>
             <Routes>
-            <Route path="/" element={<Home />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />
                 <Route path="/cadastro-usuario" element={<CadastroUsuario />} />
             </Routes>

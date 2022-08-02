@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import UsuarioService from '../app/service/usuarioService';
 
 const withNavigate = Component => props => {
     const navigate = useNavigate();
@@ -14,15 +14,19 @@ class Home extends React.Component {
         mensagemErro: ''
     }
 
-    componentDidMount(){
+    constructor() {
+        super()
+        this.usuarioService = new UsuarioService();
+    }
+
+    componentDidMount() {
         const usuarioLogado = JSON.parse(localStorage.getItem("_usuario_logado"))
-        console.log(usuarioLogado)
-        axios.get(`http://localhost:8080/api/usuarios/${usuarioLogado.id}`)
-        .then(response => {
-            this.setState({saldo: response.data})
-        }).catch(erro => {
-            this.setState({mensagemErro: erro.response.status})
-        })
+        this.usuarioService.obterSaldoPorUsuario(usuarioLogado.id)
+            .then(response => {
+                this.setState({ saldo: response.data })
+            }).catch(erro => {
+                this.setState({ mensagemErro: erro.response.status })
+            })
     }
 
     render() {

@@ -11,9 +11,9 @@ function NavBar(props) {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarResponsive">
                     <ul className="navbar-nav">
-                         <NavBarItem href="/" label="Home"/>
-                         <NavBarItem href="/login" label="Login"/>
-                         <NavBarItem href="/cadastro-usuario" label="Cadastro"/>
+                        <NavBarItem href="/" label="Home" />
+                        <NavBarItem href="/login" label="Login" />
+                        <NavBarItem href="/cadastro-usuario" label="Cadastro" />
 
                     </ul>
                 </div>

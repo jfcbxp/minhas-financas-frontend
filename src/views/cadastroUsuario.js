@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 const withNavigate = Component => props => {
     const navigate = useNavigate();
     return <Component {...props} navigate={navigate} />;
-  };
+};
 
 class CadastroUsuario extends React.Component {
 
@@ -69,4 +69,4 @@ class CadastroUsuario extends React.Component {
     }
 }
 
-export default withNavigate ( CadastroUsuario )
+export default withNavigate(CadastroUsuario)
