@@ -4,6 +4,7 @@ import FormGroup from '../components/FormGroup';
 import { useNavigate } from 'react-router-dom'
 import UsuarioService from '../app/service/UsuarioService';
 import LocalStorageService from '../app/service/LocalStorageService';
+import { mensagemErro } from '../components/Toastr';
 
 const withNavigate = Component => props => {
     const navigate = useNavigate();
@@ -13,9 +14,8 @@ const withNavigate = Component => props => {
 class Login extends React.Component {
 
     state = {
-        email: '',
-        senha: '',
-        mensagemErro: ''
+        email: "",
+        senha: ""
     }
 
     constructor() {
@@ -29,33 +29,30 @@ class Login extends React.Component {
             email: this.state.email,
             senha: this.state.senha
         }).then(response => {
-            LocalStorageService.adicionarItem('_usuario_logado',response.data)
+            LocalStorageService.adicionarItem("_usuario_logado", response.data)
             this.usuarioAutenticado()
         }).catch(erro => {
-            this.setState({ mensagemErro: erro.response.status })
+            mensagemErro(erro.response.status)
         })
 
     }
 
     usuarioAutenticado = () => {
         const navigate = this.props.navigate;
-        navigate('/');
+        navigate("/");
     }
 
     prepareCadastrar = () => {
         const navigate = this.props.navigate;
-        navigate('/cadastro-usuario');
+        navigate("/cadastro-usuario");
     }
 
     render() {
         return (
             <div className="row">
-                <div className="col-md-6" style={{ position: 'relative', left: '300px' }} >
+                <div className="col-md-6" style={{ position: "relative", left: "300px" }} >
                     <div className="bs-docs-section">
                         <Card title="Login">
-                            <div className="row" >
-                                <span>{this.state.mensagemErro}</span>
-                            </div>
                             <div className="row">
                                 <div className="col-lg-12">
                                     <div className="bs-component">

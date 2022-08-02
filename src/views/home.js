@@ -12,7 +12,7 @@ class Home extends React.Component {
 
     state = {
         saldo: 0,
-        mensagemErro: ''
+        mensagemErro: ""
     }
 
     constructor() {
