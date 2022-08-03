@@ -9,7 +9,7 @@ export default (props) => {
     })
 
     return (
-        <select className="form-control">
+        <select {...props} >
             {options}
         </select>
     )
