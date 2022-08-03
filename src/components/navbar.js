@@ -14,6 +14,7 @@ function NavBar(props) {
                         <NavBarItem href="/" label="Home" />
                         <NavBarItem href="/login" label="Login" />
                         <NavBarItem href="/cadastro-usuario" label="Cadastro" />
+                        <NavBarItem href="/consulta-lancamento" label="Lançamentos" />
 
                     </ul>
                 </div>
