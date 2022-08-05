@@ -35,6 +35,10 @@ export default class LancamentoService extends ApiService {
         return this.delete(`/${id}`)
     }
 
+    salvar(lancamento) {
+        return this.post("/", lancamento)
+    }
+
     obterListaMeses() {
         return [
             { label: "Selecione...", value: "" },
