@@ -57,13 +57,13 @@ class Login extends React.Component {
                                 <div className="col-lg-12">
                                     <div className="bs-component">
                                         <fieldset>
-                                            <FormGroup label="Email: *" htmlFor="exampleInputEmail1">
+                                            <FormGroup label="Email: *" htmlFor="inputEmail">
                                                 <input type="email" value={this.state.email} onChange={e => this.setState({ email: e.target.value })}
-                                                    className="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Digite o email" />
+                                                    className="form-control" id="inputEmail" placeholder="Digite o email" />
                                             </FormGroup>
-                                            <FormGroup label="Senha: *" htmlFor="exampleInputPassword1">
+                                            <FormGroup label="Senha: *" htmlFor="inputPassword">
                                                 <input type="password" value={this.state.senha} onChange={e => this.setState({ senha: e.target.value })}
-                                                    className="form-control" id="exampleInputPassword1" aria-describedby="emailHelp" placeholder="Digite a senha" />
+                                                    className="form-control" id="inputPassword" placeholder="Digite a senha" />
                                             </FormGroup>
                                             <button onClick={this.entrar} type="button" className="btn btn-success">Entrar</button>
                                             <button onClick={this.prepareCadastrar} type="button" className="btn btn-danger">Cadastrar</button>

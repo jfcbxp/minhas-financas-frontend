@@ -22,7 +22,6 @@ class Home extends React.Component {
 
     componentDidMount() {
         const usuarioLogado = LocalStorageService.obterItem("_usuario_logado")
-        console.log(usuarioLogado)
         this.usuarioService.obterSaldoPorUsuario(usuarioLogado.id)
             .then(response => {
                 this.setState({ saldo: response.data })
