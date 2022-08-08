@@ -3,8 +3,8 @@ import Card from '../components/Card';
 import FormGroup from '../components/FormGroup';
 import { useNavigate } from 'react-router-dom'
 import UsuarioService from '../app/service/UsuarioService';
-import LocalStorageService from '../app/service/LocalStorageService';
 import { mensagemErro } from '../components/Toastr';
+import { AuthContext } from '../main/ProvedorAutenticacao';
 
 const withNavigate = Component => props => {
     const navigate = useNavigate();
@@ -29,16 +29,16 @@ class Login extends React.Component {
             email: this.state.email,
             senha: this.state.senha
         }).then(response => {
-            LocalStorageService.adicionarItem("_usuario_logado", response.data)
-            this.usuarioAutenticado()
+            this.usuarioAutenticado(response.data)
         }).catch(erro => {
             mensagemErro(erro.response.status)
         })
 
     }
 
-    usuarioAutenticado = () => {
+    usuarioAutenticado = (usuario) => {
         const navigate = this.props.navigate;
+        this.context.iniciarSessao(usuario)
         navigate("/");
     }
 
@@ -82,5 +82,7 @@ class Login extends React.Component {
         )
     }
 }
+
+Login.contextType = AuthContext;
 
 export default withNavigate(Login);

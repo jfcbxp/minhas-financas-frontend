@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom'
 import UsuarioService from '../app/service/UsuarioService';
-import LocalStorageService from '../app/service/LocalStorageService';
+import { AuthContext } from '../main/ProvedorAutenticacao';
 
 const withNavigate = Component => props => {
     const navigate = useNavigate();
@@ -21,8 +21,8 @@ class Home extends React.Component {
     }
 
     componentDidMount() {
-        const usuarioLogado = LocalStorageService.obterItem("_usuario_logado")
-        this.usuarioService.obterSaldoPorUsuario(usuarioLogado.id)
+        const usuarioLogado = this.context.usuarioAutenticado
+        this.usuarioService.obterSaldoPorUsuario(6)
             .then(response => {
                 this.setState({ saldo: response.data })
             }).catch(erro => {
@@ -47,5 +47,7 @@ class Home extends React.Component {
         )
     }
 }
+
+Home.contextType = AuthContext
 
 export default withNavigate(Home)
