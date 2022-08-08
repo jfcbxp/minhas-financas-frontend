@@ -1,5 +1,5 @@
 import React from "react";
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import Card from '../../components/Card';
 import FormGroup from '../../components/FormGroup';
 import SelectMenu from "../../components/SelectMenu";
@@ -9,7 +9,8 @@ import LocalStorageService from '../../app/service/LocalStorageService';
 
 const withNavigate = Component => props => {
     const navigate = useNavigate();
-    return <Component {...props} navigate={navigate} />;
+    const navigateParams = useParams();
+    return <Component {...props} navigate={navigate} navigateParams={navigateParams} />;
 };
 
 
@@ -17,12 +18,14 @@ class CadastroLancamento extends React.Component {
 
     state = {
         id: null,
-        descricao: '',
-        valor: '',
-        mes: '',
-        ano: '',
-        tipo: '',
-        status: ''
+        descricao: "",
+        valor: "",
+        mes: "",
+        ano: "",
+        tipo: "",
+        status: "",
+        usuario: null,
+        atualizando: false
     }
 
     handleChange = (event) => {
@@ -37,16 +40,58 @@ class CadastroLancamento extends React.Component {
         this.lancamentoService = new LancamentoService()
     }
 
+    componentDidMount() {
+        if (this.props.navigateParams.id) {
+            this.lancamentoService.obterPorId(this.props.navigateParams.id)
+                .then(response => {
+                    console.log({ ...response.data })
+                    this.setState({ ...response.data, atualizando: true })
+
+                }).catch(error => {
+                    console.log(error.response)
+                    mensagemErro(error.response.status)
+                })
+        }
+
+    }
+
     salvar = () => {
+
         const usuarioLogado = LocalStorageService.obterItem("_usuario_logado")
         const { descricao, valor, mes, ano, tipo } = this.state
         const lancamento = { descricao, valor, mes, ano, tipo, usuario: usuarioLogado.id }
+
+        try {
+            this.lancamentoService.validar(lancamento)
+        } catch (erro) {
+            const mensagens = erro.mensagens
+            mensagens.forEach(msg => mensagens.mensagemErro(msg))
+            return false
+        }
+
 
         this.lancamentoService.salvar(lancamento)
             .then(response => {
                 const navigate = this.props.navigate;
                 navigate("/consulta-lancamento");
                 mensagemSucesso("lançamento cadastrado com sucesso!")
+
+            }).catch(error => {
+                mensagemErro(error.response.data)
+
+            })
+    }
+
+    atualizar = () => {
+        const usuarioLogado = LocalStorageService.obterItem("_usuario_logado")
+        const { descricao, valor, mes, ano, tipo, id } = this.state
+        const lancamento = { descricao, valor, mes, ano, tipo, id, usuario: usuarioLogado.id }
+
+        this.lancamentoService.atualizar(lancamento)
+            .then(response => {
+                const navigate = this.props.navigate;
+                navigate("/consulta-lancamento");
+                mensagemSucesso("lançamento atualizado com sucesso!")
 
             }).catch(error => {
                 mensagemErro(error.response.data)
@@ -66,7 +111,7 @@ class CadastroLancamento extends React.Component {
 
 
         return (
-            <Card title="Cadastrar Lançamento">
+            <Card title={this.state.atualizando ? "Atualização de Lançamento" : "Cadastro de Lançamento"}>
                 <div className="row">
                     <div className="col-md-12">
                         <FormGroup id="inputDescricao" label="Descrição: *">
@@ -109,7 +154,15 @@ class CadastroLancamento extends React.Component {
                         </FormGroup>
                     </div>
                     <div className="col-md-12">
-                        <button onClick={this.salvar} type="button" className="btn btn-success">Salvar</button>
+                        {
+                            this.state.atualizando ?
+                                (
+                                    <button onClick={this.atualizar} type="button" className="btn btn-primary">Atualizar</button>
+                                ) :
+                                (
+                                    <button onClick={this.salvar} type="button" className="btn btn-success">Salvar</button>
+                                )
+                        }
                         <button onClick={this.cancelar} type="button" className="btn btn-danger">Cancelar</button>
 
                     </div>

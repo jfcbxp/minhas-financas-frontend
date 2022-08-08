@@ -63,7 +63,8 @@ class ConsultaLancamento extends React.Component {
     }
 
     editar = (id) => {
-        console.log(id)
+        const navigate = this.props.navigate;
+        navigate(`/cadastro-lancamento/${id}`);
     }
 
     deletar = () => {
