@@ -1,59 +1,40 @@
-import React from "react";
-import { useNavigate, useParams } from 'react-router-dom'
+import React, { useEffect } from 'react';
 import Card from '../../components/Card';
 import FormGroup from '../../components/FormGroup';
-import SelectMenu from "../../components/SelectMenu";
+import { useNavigate, useParams } from 'react-router-dom'
 import { mensagemErro, mensagemSucesso } from '../../components/Toastr';
 import { obterListaMeses, obterTipos, salvar, atualizar, obterPorId, validar } from '../../app/service/LancamentoService';
 import { obterItem } from '../../app/service/LocalStorageService';
+import { AuthConsumer } from '../../main/ProvedorAutenticacao';
+import SelectMenu from '../../components/SelectMenu';
 
-const withNavigate = Component => props => {
+function CadastroLancamento(props) {
+    const [state, setState] = React.useState({ id: null, descricao: "", valor: 0, mes: "", ano: "", tipo: "", status: "PENDENTE", usuario: null, atualizando: false });
     const navigate = useNavigate();
-    const navigateParams = useParams();
-    return <Component {...props} navigate={navigate} navigateParams={navigateParams} />;
-};
+    const { idLancamento } = useParams()
 
-
-class CadastroLancamento extends React.Component {
-
-    state = {
-        id: null,
-        descricao: "",
-        valor: "",
-        mes: "",
-        ano: "",
-        tipo: "",
-        status: "",
-        usuario: null,
-        atualizando: false
-    }
-
-    handleChange = (event) => {
+    const handleChange = (event) => {
         const value = event.target.value
         const name = event.target.name
-
-        this.setState({ [name]: value })
+        setState({ ...state, [name]: value })
     }
 
-    componentDidMount() {
-        if (this.props.navigateParams.id) {
-            obterPorId(this.props.navigateParams.id)
+    useEffect(() => {
+        if (idLancamento) {
+            obterPorId(idLancamento)
                 .then(response => {
-                    console.log({ ...response.data })
-                    this.setState({ ...response.data, atualizando: true })
+                    setState({ ...state, ...response.data, atualizando: true })
 
                 }).catch(error => {
-                    console.log(error.response)
                     mensagemErro(error.response.status)
                 })
         }
+    }, []);
 
-    }
-
-    salvarLancamento = () => {
+    const salvarLancamento = () => {
 
         const usuarioLogado = obterItem("_usuario_logado")
-        const { descricao, valor, mes, ano, tipo } = this.state
+        const { descricao, valor, mes, ano, tipo } = state
         const lancamento = { descricao, valor, mes, ano, tipo, usuario: usuarioLogado.id }
 
         try {
@@ -67,7 +48,6 @@ class CadastroLancamento extends React.Component {
 
         salvar(lancamento)
             .then(response => {
-                const navigate = this.props.navigate;
                 navigate("/consulta-lancamento");
                 mensagemSucesso("lançamento cadastrado com sucesso!")
 
@@ -77,14 +57,14 @@ class CadastroLancamento extends React.Component {
             })
     }
 
-    atualizarLancamento = () => {
+    const atualizarLancamento = () => {
         const usuarioLogado = obterItem("_usuario_logado")
-        const { descricao, valor, mes, ano, tipo, id } = this.state
+        const { descricao, valor, mes, ano, tipo, id } = state
         const lancamento = { descricao, valor, mes, ano, tipo, id, usuario: usuarioLogado.id }
 
         atualizar(lancamento)
             .then(response => {
-                const navigate = this.props.navigate;
+                const navigate = props.navigate;
                 navigate("/consulta-lancamento");
                 mensagemSucesso("lançamento atualizado com sucesso!")
 
@@ -94,79 +74,83 @@ class CadastroLancamento extends React.Component {
             })
     }
 
-    cancelar = () => {
-        const navigate = this.props.navigate;
+    const cancelar = () => {
+        const navigate = props.navigate;
         navigate("/consulta-lancamento");
         mensagemErro("operação cancelada pelo usuario")
     }
 
-    render() {
-        const tipos = obterTipos()
-        const meses = obterListaMeses()
+    const tipos = obterTipos()
+    const meses = obterListaMeses()
 
 
-        return (
-            <Card title={this.state.atualizando ? "Atualização de Lançamento" : "Cadastro de Lançamento"}>
-                <div className="row">
-                    <div className="col-md-12">
-                        <FormGroup id="inputDescricao" label="Descrição: *">
-                            <input id="inputDescricao" type="text" className="form-control"
-                                name="descricao" onChange={this.handleChange} value={this.state.descricao} />
-                        </FormGroup>
-                    </div>
+    return (
+        <Card title={state.atualizando ? "Atualização de Lançamento" : "Cadastro de Lançamento"}>
+            <div className="row">
+                <div className="col-md-12">
+                    <FormGroup id="inputDescricao" label="Descrição: *">
+                        <input id="inputDescricao" type="text" className="form-control"
+                            name="descricao" onChange={handleChange} value={state.descricao} />
+                    </FormGroup>
                 </div>
-                <div className="row">
-                    <div className="col-md-6">
-                        <FormGroup id="inputAno" label="Ano: *">
-                            <input id="inputAno" type="text" className="form-control"
-                                name="ano" onChange={this.handleChange} value={this.state.ano} />
-                        </FormGroup>
-                    </div>
-                    <div className="col-md-6">
-                        <FormGroup id="inputMes" label="Mes: *">
-                            <SelectMenu id="inputMes" lista={meses} className="form-control"
-                                name="mes" onChange={this.handleChange} value={this.state.mes} />
-                        </FormGroup>
-                    </div>
+            </div>
+            <div className="row">
+                <div className="col-md-6">
+                    <FormGroup id="inputAno" label="Ano: *">
+                        <input id="inputAno" type="text" className="form-control"
+                            name="ano" onChange={handleChange} value={state.ano} />
+                    </FormGroup>
                 </div>
-                <div className="row">
-                    <div className="col-md-4">
-                        <FormGroup id="inputValor" label="Valor: *">
-                            <input id="inputValor" type="text" className="form-control"
-                                name="valor" onChange={this.handleChange} value={this.state.valor} />
-                        </FormGroup>
-                    </div>
-                    <div className="col-md-4">
-                        <FormGroup id="inputTipo" label="Tipo: *">
-                            <SelectMenu id="inputTipo" lista={tipos} className="form-control"
-                                name="tipo" onChange={this.handleChange} value={this.state.tipo} />
-                        </FormGroup>
-                    </div>
-                    <div className="col-md-4">
-                        <FormGroup id="inputStatus" label="Status: ">
-                            <input id="inputStatus" type="text" className="form-control" disabled
-                                name="status" onChange={this.handleChange} value={this.state.status} />
-                        </FormGroup>
-                    </div>
-                    <div className="col-md-12">
-                        {
-                            this.state.atualizando ?
-                                (
-                                    <button onClick={this.atualizarLancamento} type="button" className="btn btn-primary">Atualizar</button>
-                                ) :
-                                (
-                                    <button onClick={this.salvarLancamento} type="button" className="btn btn-success">Salvar</button>
-                                )
-                        }
-                        <button onClick={this.cancelar} type="button" className="btn btn-danger">Cancelar</button>
-
-                    </div>
-
-                    <div />
+                <div className="col-md-6">
+                    <FormGroup id="inputMes" label="Mes: *">
+                        <SelectMenu id="inputMes" lista={meses} className="form-control"
+                            name="mes" onChange={handleChange} value={state.mes} />
+                    </FormGroup>
                 </div>
-            </Card>
-        )
-    }
+            </div>
+            <div className="row">
+                <div className="col-md-4">
+                    <FormGroup id="inputValor" label="Valor: *">
+                        <input id="inputValor" type="text" className="form-control"
+                            name="valor" onChange={handleChange} value={state.valor} />
+                    </FormGroup>
+                </div>
+                <div className="col-md-4">
+                    <FormGroup id="inputTipo" label="Tipo: *">
+                        <SelectMenu id="inputTipo" lista={tipos} className="form-control"
+                            name="tipo" onChange={handleChange} value={state.tipo} />
+                    </FormGroup>
+                </div>
+                <div className="col-md-4">
+                    <FormGroup id="inputStatus" label="Status: ">
+                        <input id="inputStatus" type="text" className="form-control" disabled
+                            name="status" onChange={handleChange} value={state.status} />
+                    </FormGroup>
+                </div>
+                <div className="col-md-12">
+                    {
+                        state.atualizando ?
+                            (
+                                <button onClick={atualizarLancamento} type="button" className="btn btn-primary">Atualizar</button>
+                            ) :
+                            (
+                                <button onClick={salvarLancamento} type="button" className="btn btn-success">Salvar</button>
+                            )
+                    }
+                    <button onClick={cancelar} type="button" className="btn btn-danger">Cancelar</button>
+
+                </div>
+
+                <div />
+            </div>
+        </Card>
+    )
 }
 
-export default withNavigate(CadastroLancamento)
+export default () => (
+    <AuthConsumer>
+        {
+            (contexto) => (<CadastroLancamento contexto={contexto} />)
+        }
+    </AuthConsumer>
+)

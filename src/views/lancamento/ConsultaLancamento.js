@@ -1,55 +1,40 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom'
+import React, { useEffect } from 'react';
 import Card from '../../components/Card';
 import FormGroup from '../../components/FormGroup';
-import SelectMenu from '../../components/SelectMenu';
+import { useNavigate } from 'react-router-dom'
 import { mensagemErro, mensagemSucesso } from '../../components/Toastr';
-import ConsultaLancamentoTabela from './ConsultaLancamentoTabela';
-import { consultar, alterarStatus, obterTipos, obterListaMeses, deletar } from '../../app/service/LancamentoService';
-import { obterItem } from '../../app/service/LocalStorageService';
+import { obterListaMeses, obterTipos, consultar, alterarStatus, deletar, validar } from '../../app/service/LancamentoService';
+import { AuthConsumer } from '../../main/ProvedorAutenticacao';
+import SelectMenu from '../../components/SelectMenu';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
+import ConsultaLancamentoTabela from './ConsultaLancamentoTabela'
 
-
-const withNavigate = Component => props => {
+function ConsultaLancamento(props) {
+    const [state, setState] = React.useState({ ano: "", mes: "", tipo: "", descricao: "", showConfirmDialog: false, lancamentoDeletar: {}, lancamentos: [] });
     const navigate = useNavigate();
-    return <Component {...props} navigate={navigate} />;
-};
 
-class ConsultaLancamento extends React.Component {
-
-    state = {
-        ano: "",
-        mes: "",
-        tipo: "",
-        descricao: "",
-        showConfirmDialog: false,
-        lancamentoDeletar: {},
-        lancamentos: []
-    }
-
-    cadastrar = () => {
-        const navigate = this.props.navigate;
+    const cadastrar = () => {
         navigate("/cadastro-lancamento");
     }
 
-    buscar = () => {
-        if (!this.state.ano) {
+    const buscar = () => {
+        if (!state.ano) {
             mensagemErro("O Preenchimento do campo ano é obrigatorio")
             return false
         }
 
-        const usuarioLogado = obterItem("_usuario_logado")
+        const usuarioLogado = props.contexto.usuarioAutenticado
         const lancamentoFiltro = {
-            ano: this.state.ano,
-            mes: this.state.mes,
-            tipo: this.state.tipo,
-            descricao: this.state.descricao,
+            ano: state.ano,
+            mes: state.mes,
+            tipo: state.tipo,
+            descricao: state.descricao,
             usuario: usuarioLogado.id
         }
         consultar(lancamentoFiltro)
             .then(response => {
-                this.setState({ lancamentos: response.data })
+                setState({ ...state, lancamentos: response.data })
             })
             .catch(error => {
                 console.log(error)
@@ -57,20 +42,19 @@ class ConsultaLancamento extends React.Component {
 
     }
 
-    editar = (id) => {
-        const navigate = this.props.navigate;
+    const editar = (id) => {
         navigate(`/cadastro-lancamento/${id}`);
     }
 
-    alterarStatusLancamento = (lancamento, status) => {
+    const alterarStatusLancamento = (lancamento, status) => {
         alterarStatus(lancamento, status)
             .then(response => {
-                const lancamentos = this.state.lancamentos
+                const lancamentos = state.lancamentos
                 const index = lancamentos.indexOf(lancamento)
                 if (index !== -1) {
                     lancamento.status = status
                     lancamentos[index] = lancamento
-                    this.setState({ lancamentos })
+                    setState({ ...state, lancamentos })
                 }
                 mensagemSucesso("status atualizado com sucesso!")
             })
@@ -80,13 +64,13 @@ class ConsultaLancamento extends React.Component {
             })
     }
 
-    deletarLancamento = () => {
-        deletar(this.state.lancamentoDeletar.id)
+    const deletarLancamento = () => {
+        deletar(state.lancamentoDeletar.id)
             .then(response => {
-                const lancamentos = this.state.lancamentos
-                const index = lancamentos.indexOf(this.state.lancamentoDeletar)
+                const lancamentos = state.lancamentos
+                const index = lancamentos.indexOf(state.lancamentoDeletar)
                 lancamentos.splice(index, 1)
-                this.setState({ lancamentos: lancamentos, showConfirmDialog: false, lancamentoDeletar: {} })
+                setState({ ...state, lancamentos: lancamentos, showConfirmDialog: false, lancamentoDeletar: {} })
                 mensagemSucesso("lançamento deletado com sucesso!")
             })
             .catch(error => {
@@ -94,88 +78,91 @@ class ConsultaLancamento extends React.Component {
             })
     }
 
-    abrirConfirmacao = (lancamento) => {
-        this.setState({ showConfirmDialog: true, lancamentoDeletar: lancamento })
+    const abrirConfirmacao = (lancamento) => {
+        setState({ ...state, showConfirmDialog: true, lancamentoDeletar: lancamento })
     }
 
-    cancelarDelecao = () => {
-        this.setState({ showConfirmDialog: false, lancamentoDeletar: {} })
+    const cancelarDelecao = () => {
+        setState({ ...state, showConfirmDialog: false, lancamentoDeletar: {} })
     }
 
-    render() {
-        const meses = obterListaMeses()
-        const tipos = obterTipos()
+    const tipos = obterTipos()
+    const meses = obterListaMeses()
 
-        const confirmDialogFooter = (
-            <div>
-                <Button label="Confirmar" icon="pi pi-check" onClick={this.deletarLancamento} />
-                <Button label="Cancelar" icon="pi pi-times" onClick={this.cancelarDelecao} />
+    const confirmDialogFooter = (
+        <div>
+            <Button label="Confirmar" icon="pi pi-check" onClick={deletarLancamento} />
+            <Button label="Cancelar" icon="pi pi-times" onClick={cancelarDelecao} />
+        </div>
+    );
+
+    return (
+        <Card title="Consulta Lançamentos">
+            <div className="row">
+                <div className="col-md-6">
+                    <div className="bs-component">
+
+                        <fieldset>
+                            <FormGroup label="Ano: *" htmlFor="inputAno">
+                                <input type="text" className="form-control" id="inputAno" name="ano" placeholder="Digite o ano"
+                                    value={state.ano} onChange={e => setState({ ...state, ano: e.target.value })} />
+                            </FormGroup>
+                            <FormGroup label="Mes: " htmlFor="inputMes">
+                                <SelectMenu
+                                    className="form-control"
+                                    value={state.mes}
+                                    onChange={e => setState({ ...state, mes: e.target.value })}
+                                    lista={meses} />
+                            </FormGroup>
+                            <FormGroup label="Descrição: " htmlFor="inputDescricao">
+                                <input type="text" className="form-control" id="inputDescricao" name="descricao" placeholder="Digite a descrição"
+                                    value={state.descricao} onChange={e => setState({ ...state, descricao: e.target.value })} />
+                            </FormGroup>
+                            <FormGroup label="Tipo Lançamento: " htmlFor="inputTipo">
+                                <SelectMenu
+                                    className="form-control"
+                                    value={state.tipo}
+                                    onChange={e => setState({ ...state, tipo: e.target.value })}
+                                    lista={tipos} />
+                            </FormGroup>
+                            <button onClick={buscar} type="button" className="btn btn-success">Buscar</button>
+                            <button onClick={cadastrar} type="button" className="btn btn-danger">Cadastrar</button>
+
+                        </fieldset>
+                    </div>
+
+                </div>
+
             </div>
-        );
-
-        return (
-            <Card title="Consulta Lançamentos">
-                <div className="row">
-                    <div className="col-md-6">
-                        <div className="bs-component">
-
-                            <fieldset>
-                                <FormGroup label="Ano: *" htmlFor="inputAno">
-                                    <input type="text" className="form-control" id="inputAno" name="ano" placeholder="Digite o ano"
-                                        value={this.state.ano} onChange={e => this.setState({ ano: e.target.value })} />
-                                </FormGroup>
-                                <FormGroup label="Mes: " htmlFor="inputMes">
-                                    <SelectMenu
-                                        className="form-control"
-                                        value={this.state.mes}
-                                        onChange={e => this.setState({ mes: e.target.value })}
-                                        lista={meses} />
-                                </FormGroup>
-                                <FormGroup label="Descrição: " htmlFor="inputDescricao">
-                                    <input type="text" className="form-control" id="inputDescricao" name="descricao" placeholder="Digite a descrição"
-                                        value={this.state.descricao} onChange={e => this.setState({ descricao: e.target.value })} />
-                                </FormGroup>
-                                <FormGroup label="Tipo Lançamento: " htmlFor="inputTipo">
-                                    <SelectMenu
-                                        className="form-control"
-                                        value={this.state.tipo}
-                                        onChange={e => this.setState({ tipo: e.target.value })}
-                                        lista={tipos} />
-                                </FormGroup>
-                                <button onClick={this.buscar} type="button" className="btn btn-success">Buscar</button>
-                                <button onClick={this.cadastrar} type="button" className="btn btn-danger">Cadastrar</button>
-
-                            </fieldset>
-                        </div>
+            <div className="row">
+                <div className="col-md-12">
+                    <div className="bs-component">
+                        <ConsultaLancamentoTabela lancamentos={state.lancamentos}
+                            alterarStatus={alterarStatusLancamento}
+                            deleteAction={abrirConfirmacao}
+                            editAction={editar} />
 
                     </div>
-
                 </div>
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="bs-component">
-                            <ConsultaLancamentoTabela lancamentos={this.state.lancamentos}
-                                alterarStatus={this.alterarStatus}
-                                deleteAction={this.abrirConfirmacao}
-                                editAction={this.editar} />
+            </div>
+            <div>
+                <Dialog header="Deletar Registro?"
+                    visible={state.showConfirmDialog}
+                    style={{ width: '50vw' }} modal={true}
+                    onHide={cancelarDelecao}
+                    footer={confirmDialogFooter}>
+                    Confirma a exclusão desse lançamento ?
+                </Dialog>
+            </div>
+        </Card>
 
-                        </div>
-                    </div>
-                </div>
-                <div>
-                    <Dialog header="Deletar Registro?"
-                        visible={this.state.showConfirmDialog}
-                        style={{ width: '50vw' }} modal={true}
-                        onHide={this.cancelarDelecao}
-                        footer={confirmDialogFooter}>
-                        Confirma a exclusão desse lançamento ?
-                    </Dialog>
-                </div>
-            </Card>
-
-        )
-    }
+    )
 }
 
-
-export default withNavigate(ConsultaLancamento)
+export default () => (
+    <AuthConsumer>
+        {
+            (contexto) => (<ConsultaLancamento contexto={contexto} />)
+        }
+    </AuthConsumer>
+)

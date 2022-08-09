@@ -21,7 +21,7 @@ function Rotas(props) {
                 <Route path="/consulta-lancamento" element={props.contexto.isAutenticado ? <ConsultaLancamento /> : <Login />} />
                 <Route path="/cadastro-lancamento">
                     <Route index element={props.contexto.isAutenticado ? <CadastroLancamento /> : <Login />} />
-                    <Route path=":id" element={props.contexto.isAutenticado ? <CadastroLancamento /> : <Login />} />
+                    <Route path=":idLancamento" element={props.contexto.isAutenticado ? <CadastroLancamento /> : <Login />} />
                 </Route>
             </Routes>
         </BrowserRouter>
