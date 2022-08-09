@@ -1,10 +1,7 @@
 import React from 'react';
 import NavBarItem from './NavBarItem';
-import AuthService from '../app/service/AuthService';
+import { AuthConsumer } from '../main/ProvedorAutenticacao';
 
-const deslogar = () => {
-    AuthService.deslogar()
-}
 
 function NavBar(props) {
     return (
@@ -16,13 +13,11 @@ function NavBar(props) {
                 </button>
                 <div className="collapse navbar-collapse" id="navbarResponsive">
                     <ul className="navbar-nav">
-                        <NavBarItem render={AuthService.isUsuarioAutenticado()} href="/" label="Home" />
-                        <NavBarItem render={!AuthService.isUsuarioAutenticado()} href="/cadastro-usuario" label="Cadastro" />
-                        <NavBarItem render={AuthService.isUsuarioAutenticado()} href="/consulta-lancamento" label="Lançamentos" />
-                        <NavBarItem render={AuthService.isUsuarioAutenticado()} href="/cadastro-lancamento" label="Cadastrar Lançamento" />
-                        <NavBarItem render={!AuthService.isUsuarioAutenticado()} href="/login" label="Login" />
-                        <NavBarItem render={AuthService.isUsuarioAutenticado()} onClick={deslogar} href="/login" label="Sair" />
-
+                        <NavBarItem render={props.contexto.isAutenticado} href="/" label="Home" />
+                        <NavBarItem render={!props.contexto.isAutenticado} href="/cadastro-usuario" label="Cadastro" />
+                        <NavBarItem render={props.contexto.isAutenticado} href="/consulta-lancamento" label="Lançamentos" />
+                        <NavBarItem render={props.contexto.isAutenticado} href="/cadastro-lancamento" label="Cadastrar Lançamento" />
+                        <NavBarItem render={!props.contexto.isAutenticado} href="/login" label="Login" />
                     </ul>
                 </div>
             </div>
@@ -30,4 +25,10 @@ function NavBar(props) {
     )
 }
 
-export default NavBar;
+export default () => (
+    <AuthConsumer>
+        {
+            (contexto) => (<NavBar contexto={contexto} />)
+        }
+    </AuthConsumer>
+)
