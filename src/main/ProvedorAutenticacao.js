@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import AuthService from "../app/service/AuthService";
 
 export const AuthContext = React.createContext()
@@ -16,8 +16,21 @@ export default function ProvedorAutenticacao({ children }) {
 
     }
 
+    const encerrarSessao = () => {
+        AuthService.deslogar()
+        setUsuarioAutenticado(null)
+        setAutenticado(false)
+    }
+/*
+    useEffect(() => {
+        setUsuarioAutenticado(AuthService.obterUsuarioaAutenticado())
+        setAutenticado(AuthService.isUsuarioAutenticado())
+
+    }, []);
+*/
+
     return (
-        <AuthProvider value={{ iniciarSessao, usuarioAutenticado, isAutenticado }}>
+        <AuthProvider value={{ iniciarSessao, encerrarSessao, usuarioAutenticado, isAutenticado }}>
             {children}
         </AuthProvider>
     )

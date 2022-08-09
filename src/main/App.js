@@ -9,21 +9,18 @@ import "primeicons/primeicons.css";                                //icons
 
 import React from 'react';
 import Rotas from './Rotas';
-import NavBar from '../components/NavBar';
 import ProvedorAutenticacao from './ProvedorAutenticacao';
 
-class App extends React.Component {
-  render() {
-    return (
-      <ProvedorAutenticacao>
+function App() {
+  return (
+    <ProvedorAutenticacao>
 
-        <NavBar />
-        <div className="container">
-          <Rotas />
-        </div>
-      </ProvedorAutenticacao>
-    )
-  }
+
+      <div className="container">
+        <Rotas />
+      </div>
+    </ProvedorAutenticacao>
+  )
 }
 
 export default App;

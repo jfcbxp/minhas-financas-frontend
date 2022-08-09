@@ -6,12 +6,15 @@ import Home from '../views/Home';
 import ConsultaLancamento from '../views/lancamento/ConsultaLancamento';
 import CadastroLancamento from '../views/lancamento/CadastroLancamento';
 import { AuthConsumer } from '../main/ProvedorAutenticacao';
+import NavBar from '../components/NavBar';
 
 function Rotas(props) {
     return (
 
         <BrowserRouter>
+        <NavBar />
             <Routes>
+            
                 <Route path="/login" element={props.contexto.isAutenticado ? <Home /> : <Login />} />
                 <Route path="/cadastro-usuario" element={props.contexto.isAutenticado ? <CadastroUsuario /> : <Login />} />
                 <Route path="/" element={props.contexto.isAutenticado ? <Home /> : <Login />} />
