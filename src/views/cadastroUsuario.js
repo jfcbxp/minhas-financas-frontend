@@ -6,7 +6,7 @@ import UsuarioService from '../app/service/UsuarioService';
 import { mensagemErro, mensagemSucesso } from '../components/Toastr';
 import { AuthConsumer } from '../main/ProvedorAutenticacao';
 
-function CadastroUsuario(props) {
+function CadastroUsuario() {
     const [state, setState] = React.useState({ nome: "", email: "", senha: "", senhaRepeticao: "" });
     const [usuarioService] = React.useState(() => new UsuarioService());
     const navigate = useNavigate();
@@ -27,7 +27,6 @@ function CadastroUsuario(props) {
             });
             return false
         }
-
         usuarioService.salvar(usuario).then(response => {
             mensagemSucesso('Usuario cadastrado com sucesso!')
             navigate("/login");
@@ -48,19 +47,19 @@ function CadastroUsuario(props) {
                         <fieldset>
                             <FormGroup label="Nome: *" htmlFor="inputNome">
                                 <input type="text" className="form-control" id="inputNome" name="nome" placeholder="Digite seu nome"
-                                    value={state.nome} onChange={e => setState({ nome: e.target.value })} />
+                                    value={state.nome} onChange={e => setState({ ...state, nome: e.target.value })} />
                             </FormGroup>
                             <FormGroup label="Email: *" htmlFor="inputEmail">
                                 <input type="email" className="form-control" id="inputEmail" name="email" placeholder="Digite seu email"
-                                    value={state.email} onChange={e => setState({ email: e.target.value })} />
+                                    value={state.email} onChange={e => setState({ ...state, email: e.target.value })} />
                             </FormGroup>
                             <FormGroup label="Senha: *" htmlFor="inputSenha">
                                 <input type="password" className="form-control" id="inpuSenha" name="senha" placeholder="Digite sua senha"
-                                    value={state.senha} onChange={e => setState({ senha: e.target.value })} />
+                                    value={state.senha} onChange={e => setState({ ...state, senha: e.target.value })} />
                             </FormGroup>
                             <FormGroup label="Repita a Senha: *" htmlFor="inputSenhaRepeticao">
                                 <input type="password" className="form-control" id="inpuSenhaRepeticao" name="senhaRepeticao" placeholder="Repita a senha"
-                                    value={state.senhaRepeticao} onChange={e => setState({ senhaRepeticao: e.target.value })} />
+                                    value={state.senhaRepeticao} onChange={e => setState({ ...state, senhaRepeticao: e.target.value })} />
                             </FormGroup>
                             <button onClick={cadastrar} type="button" className="btn btn-success">Salvar</button>
                             <button onClick={voltar} type="button" className="btn btn-danger">Voltar</button>

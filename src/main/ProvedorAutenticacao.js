@@ -1,5 +1,5 @@
 import React, { useEffect } from "react"
-import AuthService from "../app/service/AuthService";
+import { logar, deslogar, obterUsuarioaAutenticado, isUsuarioAutenticado } from "../app/service/AuthService";
 
 export const AuthContext = React.createContext()
 export const AuthConsumer = AuthContext.Consumer;
@@ -10,25 +10,25 @@ export default function ProvedorAutenticacao({ children }) {
     const [isAutenticado, setAutenticado] = React.useState(null)
 
     const iniciarSessao = (usuario) => {
-        AuthService.logar(usuario)
+        logar(usuario)
         setUsuarioAutenticado(usuario)
         setAutenticado(true)
 
     }
 
     const encerrarSessao = () => {
-        AuthService.deslogar()
+        deslogar()
         setUsuarioAutenticado(null)
         setAutenticado(false)
     }
 /*
     useEffect(() => {
-        setUsuarioAutenticado(AuthService.obterUsuarioaAutenticado())
-        setAutenticado(AuthService.isUsuarioAutenticado())
+        setUsuarioAutenticado(obterUsuarioaAutenticado())
+        setAutenticado(isUsuarioAutenticado())
+        console.log(obterUsuarioaAutenticado(),usuarioAutenticado)
 
-    }, []);
+    }, [isAutenticado]);
 */
-
     return (
         <AuthProvider value={{ iniciarSessao, encerrarSessao, usuarioAutenticado, isAutenticado }}>
             {children}

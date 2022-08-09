@@ -16,7 +16,7 @@ function Rotas(props) {
             <Routes>
             
                 <Route path="/login" element={props.contexto.isAutenticado ? <Home /> : <Login />} />
-                <Route path="/cadastro-usuario" element={props.contexto.isAutenticado ? <CadastroUsuario /> : <Login />} />
+                <Route path="/cadastro-usuario" element={props.contexto.isAutenticado ? <Home /> : <CadastroUsuario />} />
                 <Route path="/" element={props.contexto.isAutenticado ? <Home /> : <Login />} />
                 <Route path="/consulta-lancamento" element={props.contexto.isAutenticado ? <ConsultaLancamento /> : <Login />} />
                 <Route path="/cadastro-lancamento">
