@@ -4,8 +4,8 @@ import Card from '../../components/Card';
 import FormGroup from '../../components/FormGroup';
 import SelectMenu from "../../components/SelectMenu";
 import { mensagemErro, mensagemSucesso } from '../../components/Toastr';
-import LancamentoService from '../../app/service/LancamentoService';
-import LocalStorageService from '../../app/service/LocalStorageService';
+import { obterListaMeses, obterTipos, salvar, atualizar, obterPorId, validar } from '../../app/service/LancamentoService';
+import { obterItem } from '../../app/service/LocalStorageService';
 
 const withNavigate = Component => props => {
     const navigate = useNavigate();
@@ -35,14 +35,9 @@ class CadastroLancamento extends React.Component {
         this.setState({ [name]: value })
     }
 
-    constructor() {
-        super()
-        this.lancamentoService = new LancamentoService()
-    }
-
     componentDidMount() {
         if (this.props.navigateParams.id) {
-            this.lancamentoService.obterPorId(this.props.navigateParams.id)
+            obterPorId(this.props.navigateParams.id)
                 .then(response => {
                     console.log({ ...response.data })
                     this.setState({ ...response.data, atualizando: true })
@@ -55,14 +50,14 @@ class CadastroLancamento extends React.Component {
 
     }
 
-    salvar = () => {
+    salvarLancamento = () => {
 
-        const usuarioLogado = LocalStorageService.obterItem("_usuario_logado")
+        const usuarioLogado = obterItem("_usuario_logado")
         const { descricao, valor, mes, ano, tipo } = this.state
         const lancamento = { descricao, valor, mes, ano, tipo, usuario: usuarioLogado.id }
 
         try {
-            this.lancamentoService.validar(lancamento)
+            validar(lancamento)
         } catch (erro) {
             const mensagens = erro.mensagens
             mensagens.forEach(msg => mensagens.mensagemErro(msg))
@@ -70,7 +65,7 @@ class CadastroLancamento extends React.Component {
         }
 
 
-        this.lancamentoService.salvar(lancamento)
+        salvar(lancamento)
             .then(response => {
                 const navigate = this.props.navigate;
                 navigate("/consulta-lancamento");
@@ -82,12 +77,12 @@ class CadastroLancamento extends React.Component {
             })
     }
 
-    atualizar = () => {
-        const usuarioLogado = LocalStorageService.obterItem("_usuario_logado")
+    atualizarLancamento = () => {
+        const usuarioLogado = obterItem("_usuario_logado")
         const { descricao, valor, mes, ano, tipo, id } = this.state
         const lancamento = { descricao, valor, mes, ano, tipo, id, usuario: usuarioLogado.id }
 
-        this.lancamentoService.atualizar(lancamento)
+        atualizar(lancamento)
             .then(response => {
                 const navigate = this.props.navigate;
                 navigate("/consulta-lancamento");
@@ -106,8 +101,8 @@ class CadastroLancamento extends React.Component {
     }
 
     render() {
-        const tipos = this.lancamentoService.obterTipos()
-        const meses = this.lancamentoService.obterListaMeses()
+        const tipos = obterTipos()
+        const meses = obterListaMeses()
 
 
         return (
@@ -157,10 +152,10 @@ class CadastroLancamento extends React.Component {
                         {
                             this.state.atualizando ?
                                 (
-                                    <button onClick={this.atualizar} type="button" className="btn btn-primary">Atualizar</button>
+                                    <button onClick={this.atualizarLancamento} type="button" className="btn btn-primary">Atualizar</button>
                                 ) :
                                 (
-                                    <button onClick={this.salvar} type="button" className="btn btn-success">Salvar</button>
+                                    <button onClick={this.salvarLancamento} type="button" className="btn btn-success">Salvar</button>
                                 )
                         }
                         <button onClick={this.cancelar} type="button" className="btn btn-danger">Cancelar</button>

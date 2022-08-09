@@ -7,37 +7,25 @@ const httpClient = axios.create({
     }
 })
 
-class ApiService {
 
-    constructor(apiurl) {
-        this.apiurl = apiurl;
-    }
-
-    post(url, objeto) {
-        const requestUrl = `${this.apiurl}${url}`
-        return httpClient.post(requestUrl, objeto);
-    }
-
-    put(url, objeto) {
-        const requestUrl = `${this.apiurl}${url}`
-        return httpClient.put(requestUrl, objeto);
-    }
-
-    patch(url, objeto) {
-        const requestUrl = `${this.apiurl}${url}`
-        return httpClient.patch(requestUrl, objeto);
-    }
-
-    delete(url) {
-        const requestUrl = `${this.apiurl}${url}`
-        return httpClient.delete(requestUrl);
-    }
-
-    get(url) {
-        const requestUrl = `${this.apiurl}${url}`
-        return httpClient.get(requestUrl);
-    }
+export function postRest(url, objeto) {
+    return httpClient.post(url, objeto);
 }
 
-export default ApiService;
+export function putRest(url, objeto) {
+    return httpClient.put(url, objeto);
+}
+
+export function patchRest(url, objeto) {
+    return httpClient.patch(url, objeto);
+}
+
+export function deleteRest(url) {
+    return httpClient.delete(url);
+}
+
+export function getRest(url) {
+    return httpClient.get(url);
+}
+
 

@@ -1,14 +1,13 @@
 import React, { useEffect } from 'react';
-import UsuarioService from '../app/service/UsuarioService';
+import { obterSaldoPorUsuario } from '../app/service/UsuarioService';
 import { AuthConsumer } from '../main/ProvedorAutenticacao';
 
 function Home(props) {
     const [state, setState] = React.useState({ saldo: 0, mensagemErro: "" });
-    const [usuarioService] = React.useState(() => new UsuarioService());
 
     useEffect(() => {
         const usuarioLogado = props.contexto.usuarioAutenticado
-        usuarioService.obterSaldoPorUsuario(usuarioLogado.id)
+        obterSaldoPorUsuario(usuarioLogado.id)
             .then(response => {
                 setState({ saldo: response.data })
             }).catch(erro => {

@@ -2,13 +2,12 @@ import React from 'react';
 import Card from '../components/Card';
 import FormGroup from '../components/FormGroup';
 import { useNavigate } from 'react-router-dom'
-import UsuarioService from '../app/service/UsuarioService';
+import {validar,salvar} from '../app/service/UsuarioService';
 import { mensagemErro, mensagemSucesso } from '../components/Toastr';
 import { AuthConsumer } from '../main/ProvedorAutenticacao';
 
 function CadastroUsuario() {
     const [state, setState] = React.useState({ nome: "", email: "", senha: "", senhaRepeticao: "" });
-    const [usuarioService] = React.useState(() => new UsuarioService());
     const navigate = useNavigate();
 
     const cadastrar = () => {
@@ -20,14 +19,14 @@ function CadastroUsuario() {
         }
 
         try {
-            usuarioService.validar(usuario)
+            validar(usuario)
         } catch (erro) {
             erro.mensagens.forEach(mensagem => {
                 mensagemErro(mensagem)
             });
             return false
         }
-        usuarioService.salvar(usuario).then(response => {
+        salvar(usuario).then(response => {
             mensagemSucesso('Usuario cadastrado com sucesso!')
             navigate("/login");
         }).catch(error => {

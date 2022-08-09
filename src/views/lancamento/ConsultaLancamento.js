@@ -5,8 +5,8 @@ import FormGroup from '../../components/FormGroup';
 import SelectMenu from '../../components/SelectMenu';
 import { mensagemErro, mensagemSucesso } from '../../components/Toastr';
 import ConsultaLancamentoTabela from './ConsultaLancamentoTabela';
-import LancamentoService from '../../app/service/LancamentoService';
-import LocalStorageService from '../../app/service/LocalStorageService';
+import { consultar, alterarStatus, obterTipos, obterListaMeses, deletar } from '../../app/service/LancamentoService';
+import { obterItem } from '../../app/service/LocalStorageService';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 
@@ -28,11 +28,6 @@ class ConsultaLancamento extends React.Component {
         lancamentos: []
     }
 
-    constructor() {
-        super();
-        this.lancamentoService = new LancamentoService();
-    }
-
     cadastrar = () => {
         const navigate = this.props.navigate;
         navigate("/cadastro-lancamento");
@@ -44,7 +39,7 @@ class ConsultaLancamento extends React.Component {
             return false
         }
 
-        const usuarioLogado = LocalStorageService.obterItem("_usuario_logado")
+        const usuarioLogado = obterItem("_usuario_logado")
         const lancamentoFiltro = {
             ano: this.state.ano,
             mes: this.state.mes,
@@ -52,7 +47,7 @@ class ConsultaLancamento extends React.Component {
             descricao: this.state.descricao,
             usuario: usuarioLogado.id
         }
-        this.lancamentoService.consultar(lancamentoFiltro)
+        consultar(lancamentoFiltro)
             .then(response => {
                 this.setState({ lancamentos: response.data })
             })
@@ -67,8 +62,8 @@ class ConsultaLancamento extends React.Component {
         navigate(`/cadastro-lancamento/${id}`);
     }
 
-    alterarStatus = (lancamento, status) => {
-        this.lancamentoService.alterarStatus(lancamento, status)
+    alterarStatusLancamento = (lancamento, status) => {
+        alterarStatus(lancamento, status)
             .then(response => {
                 const lancamentos = this.state.lancamentos
                 const index = lancamentos.indexOf(lancamento)
@@ -85,8 +80,8 @@ class ConsultaLancamento extends React.Component {
             })
     }
 
-    deletar = () => {
-        this.lancamentoService.deletar(this.state.lancamentoDeletar.id)
+    deletarLancamento = () => {
+        deletar(this.state.lancamentoDeletar.id)
             .then(response => {
                 const lancamentos = this.state.lancamentos
                 const index = lancamentos.indexOf(this.state.lancamentoDeletar)
@@ -108,12 +103,12 @@ class ConsultaLancamento extends React.Component {
     }
 
     render() {
-        const meses = this.lancamentoService.obterListaMeses()
-        const tipos = this.lancamentoService.obterTipos()
+        const meses = obterListaMeses()
+        const tipos = obterTipos()
 
         const confirmDialogFooter = (
             <div>
-                <Button label="Confirmar" icon="pi pi-check" onClick={this.deletar} />
+                <Button label="Confirmar" icon="pi pi-check" onClick={this.deletarLancamento} />
                 <Button label="Cancelar" icon="pi pi-times" onClick={this.cancelarDelecao} />
             </div>
         );

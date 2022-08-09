@@ -1,16 +1,13 @@
-class LocalStorageService {
 
-    static adicionarItem(chave, valor) {
-        localStorage.setItem(chave, JSON.stringify(valor));
-    }
 
-    static obterItem(chave) {
-        return JSON.parse(localStorage.getItem(chave));
-    }
-
-    static removerItem(chave) {
-        localStorage.removeItem(chave)
-    }
+export function adicionarItem(chave, valor) {
+    localStorage.setItem(chave, JSON.stringify(valor));
 }
 
-export default LocalStorageService;
+export function obterItem(chave) {
+    return JSON.parse(localStorage.getItem(chave));
+}
+
+export function removerItem(chave) {
+    localStorage.removeItem(chave)
+}

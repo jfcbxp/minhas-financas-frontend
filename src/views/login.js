@@ -2,18 +2,17 @@ import React, { useEffect } from 'react';
 import Card from '../components/Card';
 import FormGroup from '../components/FormGroup';
 import { useNavigate } from 'react-router-dom'
-import UsuarioService from '../app/service/UsuarioService';
+import { autenticar } from '../app/service/UsuarioService';
 import { mensagemErro } from '../components/Toastr';
 import { AuthConsumer } from '../main/ProvedorAutenticacao';
 
 function Login(props) {
     const [state, setState] = React.useState({ email: "", senha: "" });
-    const [usuarioService] = React.useState(() => new UsuarioService());
     const navigate = useNavigate();
 
 
     const entrar = async () => {
-        usuarioService.autenticar({
+        autenticar({
             email: state.email,
             senha: state.senha
         }).then(response => {
