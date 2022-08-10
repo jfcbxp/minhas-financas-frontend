@@ -13,7 +13,7 @@ export function obterSaldoPorUsuario(id) {
 }
 
 export function salvar(usuario) {
-    return postRest(`${URL_SERVICE}/`, usuario)
+    return postRest(`${URL_SERVICE}`, usuario)
 }
 
 export function validar(usuario) {

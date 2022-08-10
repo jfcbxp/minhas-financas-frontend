@@ -1,12 +1,20 @@
 import axios from 'axios'
 
+const baseURL = process.env.REACT_APP_API_URL
 const httpClient = axios.create({
     baseURL: "http://localhost:8080",
+    withCredentials: true,
     headers: {
         'Content-Type': 'application/json'
     }
 })
 
+
+export function registrarToken(token) {
+    if (token) {
+        httpClient.defaults.headers.common['Authorization'] = `Bearer ${token}`
+    }
+}
 
 export function postRest(url, objeto) {
     return httpClient.post(url, objeto);

@@ -38,7 +38,7 @@ export function deletar(id) {
 }
 
 export function salvar(lancamento) {
-    return postRest(`${URL_SERVICE}/`, lancamento)
+    return postRest(`${URL_SERVICE}`, lancamento)
 }
 
 export function atualizar(lancamento) {
